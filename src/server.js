@@ -3,7 +3,7 @@ const path = require('path');
 const cors = require('cors');
 
 const { getConfig, saveConfig } = require('./configStore');
-const { startFrpc, stopFrpc, getStatusWithConnection, ensureConfigFiles } = require('./frpcManager');
+const { startFrpc, stopFrpc, getStatusWithConnection, autoStartFrpcIfPossible, ensureConfigFiles } = require('./frpcManager');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -12,6 +12,11 @@ app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 
 ensureConfigFiles(getConfig());
+try {
+  autoStartFrpcIfPossible();
+} catch (error) {
+  console.error('Failed to auto-start frpc', error);
+}
 
 app.get('/api/config', (req, res) => {
   const config = getConfig();
@@ -66,4 +71,3 @@ app.use((req, res, next) => {
 app.listen(PORT, () => {
   console.log(`frpc UI server listening on port ${PORT}`);
 });
-

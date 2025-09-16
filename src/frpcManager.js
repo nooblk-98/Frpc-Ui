@@ -17,6 +17,7 @@ let lastExit = null;
 let lastError = null;
 const logs = [];
 const MAX_LOG_LINES = 500;
+let autoStartEnabled = true;
 
 function appendLog(source, message) {
   const lines = message.toString().split(/\r?\n/).filter(Boolean);
@@ -142,6 +143,7 @@ function startFrpc(overrides) {
   if (!executablePath) {
     throw new Error('frpcPath is not configured');
   }
+  autoStartEnabled = true;
   const { iniPath } = ensureConfigFiles(config);
   appendLog('system', `Starting frpc (${executablePath}) with config ${iniPath}`);
   frpcProcess = spawn(executablePath, ['-c', iniPath], {
@@ -167,6 +169,7 @@ function startFrpc(overrides) {
 }
 
 function stopFrpc() {
+  autoStartEnabled = false;
   if (!frpcProcess) {
     return getStatus();
   }
@@ -246,6 +249,33 @@ function checkServerConnection(config) {
   });
 }
 
+function autoStartFrpcIfPossible() {
+  if (!autoStartEnabled || frpcProcess) {
+    return getStatus();
+  }
+  const config = getConfig();
+  const executablePath = config.frpcPath || DEFAULT_FRPC_PATH;
+  const common = config.common || {};
+  const serverAddr = typeof common.server_addr === 'string' ? common.server_addr.trim() : '';
+  const serverPort = Number(common.server_port);
+
+  if (!executablePath) {
+    appendLog('system', 'Auto-start skipped: frpc executable path is not configured');
+    return getStatus();
+  }
+  if (!serverAddr || !Number.isFinite(serverPort) || serverPort <= 0) {
+    appendLog('system', 'Auto-start skipped: server address or port missing');
+    return getStatus();
+  }
+
+  try {
+    return startFrpc();
+  } catch (error) {
+    appendLog('system', `Auto-start failed: ${error.message}`);
+    lastError = { message: error.message, timestamp: new Date().toISOString() };
+    return getStatus();
+  }
+}
 async function getStatusWithConnection() {
   const status = getStatus();
   try {
@@ -266,21 +296,10 @@ module.exports = {
   stopFrpc,
   getStatus,
   getStatusWithConnection,
+  autoStartFrpcIfPossible,
   buildIni,
   buildToml,
   ensureConfigFiles,
   GENERATED_INI,
   GENERATED_TOML
 };
-
-
-
-
-
-
-
-
-
-
-
-
