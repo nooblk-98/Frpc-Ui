@@ -12,6 +12,7 @@ const serverAddrInput = document.getElementById('serverAddr');
 const serverPortInput = document.getElementById('serverPort');
 const tokenInput = document.getElementById('token');
 const userInput = document.getElementById('user');
+const connectionStatusEl = document.getElementById('connectionStatus');
 
 async function loadConfig() {
   const res = await fetch('/api/config');
@@ -28,8 +29,47 @@ function renderCommon() {
   serverPortInput.value = common.server_port != null ? common.server_port : '';
   tokenInput.value = common.token || '';
   userInput.value = common.user || '';
+  renderConnectionStatus();
 }
 
+function renderConnectionStatus() {
+  if (!connectionStatusEl) {
+    return;
+  }
+  const config = state.config || {};
+  const common = config.common || {};
+  const serverAddr = (common.server_addr || '').trim();
+  const hasPort = common.server_port !== undefined && common.server_port !== null && common.server_port !== '';
+
+  if (!serverAddr || !hasPort) {
+    connectionStatusEl.textContent = 'Server connection: configure server address & port';
+    connectionStatusEl.className = 'connection-status muted';
+    return;
+  }
+
+  const connection = state.status ? state.status.serverConnection : null;
+  if (!connection) {
+    connectionStatusEl.textContent = 'Server connection: checking...';
+    connectionStatusEl.className = 'connection-status muted';
+    return;
+  }
+
+  if (connection.configured === false) {
+    connectionStatusEl.textContent = 'Server connection: configure server address & port';
+    connectionStatusEl.className = 'connection-status muted';
+    return;
+  }
+
+  if (connection.reachable) {
+    connectionStatusEl.textContent = 'Server connection: reachable';
+    connectionStatusEl.className = 'connection-status success';
+    return;
+  }
+
+  const detail = connection.message ? ` (${connection.message})` : '';
+  connectionStatusEl.textContent = `Server connection: unreachable${detail}`;
+  connectionStatusEl.className = 'connection-status error';
+}
 function renderProxies() {
   proxiesContainer.innerHTML = '';
   if (!state.config || !Array.isArray(state.config.proxies)) {
@@ -203,8 +243,11 @@ async function refreshStatus() {
     state.status = await res.json();
     renderStatus();
     renderLogs();
+    renderConnectionStatus();
   } catch (error) {
     console.error('Failed to refresh status', error);
+    state.status = null;
+    renderConnectionStatus();
   }
 }
 
@@ -257,6 +300,7 @@ function flash(message) {
 function init() {
   document.getElementById('addProxy').addEventListener('click', addProxy);
   document.getElementById('saveConfig').addEventListener('click', saveConfig);
+  document.getElementById('saveProxies').addEventListener('click', saveConfig);
   document.getElementById('startFrpc').addEventListener('click', startFrpc);
   document.getElementById('stopFrpc').addEventListener('click', stopFrpc);
   document.getElementById('refreshStatus').addEventListener('click', refreshStatus);
@@ -267,6 +311,11 @@ function init() {
 }
 
 init();
+
+
+
+
+
 
 
 

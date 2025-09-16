@@ -3,7 +3,7 @@ const path = require('path');
 const cors = require('cors');
 
 const { getConfig, saveConfig } = require('./configStore');
-const { startFrpc, stopFrpc, getStatus, ensureConfigFiles } = require('./frpcManager');
+const { startFrpc, stopFrpc, getStatusWithConnection, ensureConfigFiles } = require('./frpcManager');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -28,26 +28,29 @@ app.post('/api/config', (req, res) => {
   }
 });
 
-app.post('/api/frpc/start', (req, res) => {
+app.post('/api/frpc/start', async (req, res) => {
   try {
-    const status = startFrpc(req.body || {});
+    startFrpc(req.body || {});
+    const status = await getStatusWithConnection();
     res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-app.post('/api/frpc/stop', (req, res) => {
+app.post('/api/frpc/stop', async (req, res) => {
   try {
-    const status = stopFrpc();
+    stopFrpc();
+    const status = await getStatusWithConnection();
     res.json(status);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-app.get('/api/frpc/status', (req, res) => {
-  res.json(getStatus());
+app.get('/api/frpc/status', async (req, res) => {
+  const status = await getStatusWithConnection();
+  res.json(status);
 });
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
@@ -63,3 +66,4 @@ app.use((req, res, next) => {
 app.listen(PORT, () => {
   console.log(`frpc UI server listening on port ${PORT}`);
 });
+

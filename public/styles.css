@@ -190,3 +190,23 @@ button.danger:hover {
 }
 \n.flash {\n  position: fixed;\n  left: 50%;\n  top: 24px;\n  transform: translate(-50%, -30px);\n  padding: 12px 24px;\n  border-radius: 999px;\n  background: rgba(61, 126, 255, 0.9);\n  color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s ease, transform 0.2s ease;\n  z-index: 1000;\n}\n\n.flash.show {\n  opacity: 1;\n  transform: translate(-50%, 0);\n}\n
 \n.muted {\n  color: var(--muted);\n  font-size: 0.9rem;\n}\n
+
+.connection-status {
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  min-height: 24px;
+}
+
+.connection-status.success {
+  color: var(--success);
+}
+
+.connection-status.error {
+  color: var(--danger);
+}
+
+.common-actions {
+  align-items: center;
+}
+
