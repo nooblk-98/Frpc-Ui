@@ -208,3 +208,19 @@ button.danger:hover {
 .common-actions {
   align-items: center;
 }
+
+.footer {
+  margin: 0 auto 32px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
