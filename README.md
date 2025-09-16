@@ -5,7 +5,7 @@ A lightweight Node.js + vanilla web UI to manage a local [`frpc`](https://github
 ## Prerequisites
 
 - Node.js 18+
-- A local `frpc` binary (downloaded separately from the official FRP releases)
+- A local `frpc` binary (if you run outside Docker; the included image already ships with one)
 
 ## Getting started
 
@@ -52,13 +52,13 @@ The Dockerfile copies the FRPC binary from `snowdreamtech/frpc`; swap to another
 
 ## Usage
 
-1. Open the dashboard and point **frpc executable path** at your downloaded `frpc` binary (the Docker image defaults to `/usr/local/bin/frpc`).
-2. Fill in the Common section with the FRP server address, port, and optional token/user.
-3. Add forwarding entries for every service you want to expose. Each entry becomes a section in the generated `frpc` config.
-4. Click **Save Settings** to persist the configuration in `data/config.json`.
-5. Use **Start frpc** / **Stop frpc** to control the client. The UI streams recent stdout/stderr lines for quick feedback.
+1. Open the dashboard and fill in the Common section with your FRP server address, port, token, and user (if required). The header now shows a live connection check so you immediately know if the server is reachable.
+2. Add forwarding entries for every service you want to expose. Each entry becomes a section in the generated `frpc` config.
+3. Click **Save Settings** or **Save Forwardings** to persist updates in `data/config.json`.
+4. The backend writes `data/frpc.generated.ini` and `data/frpc.generated.toml` on every save/start. These files are bind-mounted into the frpc container.
+5. frpc starts automatically whenever the stack boots and a valid address/port is configured. Use **Stop frpc** if you need to keep it down; **Start frpc** brings it back manually.
 
-The application writes generated configuration files (`data/frpc.generated.ini` and `data/frpc.generated.toml`) whenever frpc is saved or started. These files are ignored by Git.
+The UI footer links back to the project author if you want to follow along or contribute.
 
 ## Development notes
 
