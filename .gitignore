@@ -1,0 +1,3 @@
+node_modules/
+data/frpc.generated.ini
+data/frpc.generated.toml

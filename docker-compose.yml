@@ -1,0 +1,25 @@
+services:
+  frpc:
+    image: ${FRPC_IMAGE:-snowdreamtech/frpc:alpine}
+    command: ["-c", "/etc/frp/frpc.toml"]
+    depends_on:
+      - frpc-ui
+    volumes:
+      - ./data/frpc.generated.toml:/etc/frp/frpc.toml
+    network_mode: host
+    restart: always
+
+  frpc-ui:
+    build:
+      context: .
+      args:
+        NODE_VERSION: ${NODE_VERSION:-18-alpine}
+        FRPC_IMAGE: ${FRPC_IMAGE:-snowdreamtech/frpc:alpine}
+    environment:
+      - PORT=4000
+      - FRPC_EXEC_PATH=/usr/local/bin/frpc
+    volumes:
+      - ./data:/app/data
+    ports:
+      - "4000:4000"
+    restart: unless-stopped

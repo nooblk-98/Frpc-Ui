@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>frpc UI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>frpc Client Dashboard</h1>
+    <p>Configure your FRP client, manage tunnels, and monitor logs from a simple web page.</p>
+  </header>
+
+  <main>
+    <section class="card" id="common-section">
+      <h2>Common Settings</h2>
+      <div class="form-grid">
+        <label>
+          frpc executable path
+          <input type="text" id="frpcPath" placeholder="C:\\path\\to\\frpc.exe" />
+        </label>
+        <label>
+          Server address
+          <input type="text" id="serverAddr" placeholder="example.com" />
+        </label>
+        <label>
+          Server port
+          <input type="number" id="serverPort" min="1" max="65535" />
+        </label>
+        <label>
+          Token (optional)
+          <input type="text" id="token" />
+        </label>
+        <label>
+          User (optional)
+          <input type="text" id="user" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="saveConfig">Save Settings</button>
+      </div>
+    </section>
+
+    <section class="card" id="proxies-section">
+      <div class="section-header">
+        <h2>Forwarded Services</h2>
+        <button id="addProxy">Add Forwarding</button>
+      </div>
+      <div id="proxies"></div>
+    </section>
+
+    <section class="card" id="control-section">
+      <h2>frpc Control</h2>
+      <div class="status" id="status"></div>
+      <div class="actions">
+        <button id="startFrpc" class="primary">Start frpc</button>
+        <button id="stopFrpc">Stop frpc</button>
+      </div>
+    </section>
+
+    <section class="card" id="logs-section">
+      <div class="section-header">
+        <h2>Recent Logs</h2>
+        <button id="refreshStatus">Refresh</button>
+      </div>
+      <pre id="logs" class="logs"></pre>
+    </section>
+  </main>
+
+  <template id="proxy-template">
+    <div class="proxy-entry">
+      <div class="form-grid">
+        <label>
+          Name
+          <input type="text" data-field="name" placeholder="my-service" />
+        </label>
+        <label>
+          Type
+          <select data-field="type">
+            <option value="tcp">tcp</option>
+            <option value="udp">udp</option>
+            <option value="http">http</option>
+            <option value="https">https</option>
+          </select>
+        </label>
+        <label>
+          Local IP
+          <input type="text" data-field="local_ip" placeholder="127.0.0.1" />
+        </label>
+        <label>
+          Local port
+          <input type="number" data-field="local_port" min="1" max="65535" />
+        </label>
+        <label>
+          Remote port
+          <input type="number" data-field="remote_port" min="1" max="65535" />
+        </label>
+        <label>
+          Custom domains
+          <input type="text" data-field="custom_domains" placeholder="app.example.com" />
+        </label>
+        <label>
+          Subdomain
+          <input type="text" data-field="subdomain" placeholder="myapp" />
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" data-field="use_encryption" /> use_encryption
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" data-field="use_compression" /> use_compression
+        </label>
+      </div>
+      <div class="proxy-actions">
+        <button class="danger" data-action="remove">Remove</button>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+

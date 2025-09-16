@@ -1,0 +1,192 @@
+:root {
+  --bg: #10141f;
+  --card: #1b2333;
+  --card-alt: #232f45;
+  --accent: #3d7eff;
+  --accent-strong: #235ad6;
+  --text: #eef1f7;
+  --muted: #9aa6c5;
+  --danger: #ff4d6b;
+  --success: #36d399;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  padding: 32px 24px 16px;
+  text-align: center;
+}
+
+header h1 {
+  margin: 0 0 8px;
+  font-size: 2.2rem;
+}
+
+header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+main {
+  width: min(1100px, 95vw);
+  margin: 0 auto 64px;
+  display: grid;
+  gap: 24px;
+}
+
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  width: 100%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+input,
+select,
+button {
+  font: inherit;
+}
+
+input,
+select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--card-alt);
+  color: var(--text);
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid var(--accent);
+}
+
+.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox input[type='checkbox'] {
+  width: auto;
+}
+
+.actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+button {
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+button.primary {
+  background: var(--accent);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+button.primary:hover {
+  background: var(--accent-strong);
+}
+
+button.danger:hover {
+  background: #ff3358;
+}
+
+.status {
+  margin-bottom: 12px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.status strong {
+  color: var(--text);
+}
+
+.logs {
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--card-alt);
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.proxy-entry {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.proxy-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+@media (max-width: 640px) {
+  header h1 {
+    font-size: 1.75rem;
+  }
+
+  .card {
+    padding: 20px;
+  }
+}
+\n.flash {\n  position: fixed;\n  left: 50%;\n  top: 24px;\n  transform: translate(-50%, -30px);\n  padding: 12px 24px;\n  border-radius: 999px;\n  background: rgba(61, 126, 255, 0.9);\n  color: #fff;\n  opacity: 0;\n  transition: opacity 0.2s ease, transform 0.2s ease;\n  z-index: 1000;\n}\n\n.flash.show {\n  opacity: 1;\n  transform: translate(-50%, 0);\n}\n
+\n.muted {\n  color: var(--muted);\n  font-size: 0.9rem;\n}\n

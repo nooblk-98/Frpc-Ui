@@ -1,0 +1,20 @@
+{
+  "name": "frpc-ui",
+  "version": "1.0.0",
+  "description": "Simple web UI for managing an frpc client.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "keywords": [
+    "frpc",
+    "frp",
+    "web-ui"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}

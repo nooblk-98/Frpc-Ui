@@ -1,0 +1,18 @@
+{
+  "frpcPath": "",
+  "common": {
+    "server_addr": "202.124.164.163",
+    "server_port": 7000,
+    "token": "lahiru1998",
+    "user": ""
+  },
+  "proxies": [
+    {
+      "name": "gg",
+      "type": "tcp",
+      "local_ip": "127.0.0.1",
+      "local_port": 4000,
+      "remote_port": 33662
+    }
+  ]
+}
