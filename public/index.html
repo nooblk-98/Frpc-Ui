@@ -16,7 +16,7 @@
     <section class="card" id="common-section">
       <h2>Common Settings</h2>
       <div class="form-grid">
-<label>
+        <label>
           Server address
           <input type="text" id="serverAddr" placeholder="example.com" />
         </label>
@@ -33,8 +33,9 @@
           <input type="text" id="user" />
         </label>
       </div>
-      <div class="actions">
+      <div class="actions common-actions">
         <button id="saveConfig">Save Settings</button>
+        <div id="connectionStatus" class="connection-status muted">Server connection: checking...</div>
       </div>
     </section>
 
@@ -44,6 +45,9 @@
         <button id="addProxy">Add Forwarding</button>
       </div>
       <div id="proxies"></div>
+      <div class="actions">
+        <button id="saveProxies">Save Forwardings</button>
+      </div>
     </section>
 
     <section class="card" id="control-section">
@@ -116,6 +120,9 @@
   <script src="app.js"></script>
 </body>
 </html>
+
+
+
 
 
 
