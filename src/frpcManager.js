@@ -19,6 +19,11 @@ const logs = [];
 const MAX_LOG_LINES = 500;
 let autoStartEnabled = true;
 
+function isAutoStartPreferenceEnabled(config) {
+  const preferences = (config && config.preferences) || {};
+  return preferences.autoStart !== false;
+}
+
 function appendLog(source, message) {
   const lines = message.toString().split(/\r?\n/).filter(Boolean);
   lines.forEach((line) => {
@@ -254,6 +259,10 @@ function autoStartFrpcIfPossible() {
     return getStatus();
   }
   const config = getConfig();
+  if (!isAutoStartPreferenceEnabled(config)) {
+    appendLog('system', 'Auto-start skipped: disabled in preferences');
+    return getStatus();
+  }
   const executablePath = config.frpcPath || DEFAULT_FRPC_PATH;
   const common = config.common || {};
   const serverAddr = typeof common.server_addr === 'string' ? common.server_addr.trim() : '';

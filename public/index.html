@@ -13,32 +13,37 @@
         <div class="brand-logo">frpc</div>
         <div class="brand-copy">
           <h1>frpc Control Center</h1>
-          <p>Monitor tunnels, keep connections healthy, and react quickly.</p>
+          <p>Command and monitor your tunnels with a responsive, modern console.</p>
         </div>
       </div>
       <div class="top-actions">
         <button id="refreshStatus" class="button ghost" type="button">
-          <span class="icon">?</span>
+          <span class="icon" aria-hidden="true">↻</span>
           <span>Refresh</span>
         </button>
         <button id="themeToggle" class="button ghost" type="button" aria-label="Toggle theme">
-          <span class="icon" id="themeToggleIcon">??</span>
-          <span id="themeToggleLabel">Dark</span>
+          <span class="icon" id="themeToggleIcon" aria-hidden="true">🌙</span>
+          <span id="themeToggleLabel">Switch to Light</span>
         </button>
       </div>
     </header>
 
     <main class="dashboard">
       <section class="card overview" id="overview-card">
-        <h2>Overview</h2>
+        <div class="section-header">
+          <div>
+            <h2>Operations overview</h2>
+            <p class="muted">Stay on top of frpc health, automation preferences, and refresh cadence.</p>
+          </div>
+        </div>
         <div class="overview-grid">
           <div class="metric">
             <span class="metric-label">frpc status</span>
             <span class="metric-value badge" id="overview-status">Unknown</span>
           </div>
           <div class="metric">
-            <span class="metric-label">Server</span>
-            <span class="metric-value badge" id="overview-connection">Checking�</span>
+            <span class="metric-label">Server connection</span>
+            <span class="metric-value badge" id="overview-connection">Checking</span>
           </div>
           <div class="metric">
             <span class="metric-label">Forwardings</span>
@@ -48,13 +53,29 @@
             <span class="metric-label">Auto refresh</span>
             <span class="metric-value badge" id="overview-auto-refresh">On</span>
           </div>
+          <div class="metric">
+            <span class="metric-label">Auto start</span>
+            <span class="metric-value badge" id="overview-auto-start">Enabled</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">frpc executable</span>
+            <span class="metric-value badge" id="overview-frpc-path">Missing</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Theme</span>
+            <span class="metric-value badge" id="overview-theme">Dark</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Last refresh</span>
+            <span class="metric-value" id="overview-last-refresh">--</span>
+          </div>
         </div>
       </section>
 
       <section class="card" id="common-section">
         <div class="section-header">
           <div>
-            <h2>Common Settings</h2>
+            <h2>Connection basics</h2>
             <p class="muted">Define how frpc connects to your frps server.</p>
           </div>
         </div>
@@ -62,45 +83,182 @@
           <label>
             Server address
             <input type="text" id="serverAddr" placeholder="example.com" />
+            <span class="field-hint">Public hostname or IP of your frps instance.</span>
           </label>
           <label>
             Server port
             <input type="number" id="serverPort" min="1" max="65535" />
+            <span class="field-hint">Defaults to 7000 for most deployments.</span>
           </label>
           <label>
             Token (optional)
             <input type="text" id="token" />
+            <span class="field-hint">Shared secret used for authentication.</span>
           </label>
           <label>
             User (optional)
             <input type="text" id="user" />
+            <span class="field-hint">Namespace used to group your proxies.</span>
           </label>
         </div>
+        <details class="expander">
+          <summary>Advanced connection options</summary>
+          <div class="form-grid">
+            <label>
+              Protocol
+              <select id="protocol">
+                <option value="">Default</option>
+                <option value="tcp">tcp</option>
+                <option value="kcp">kcp</option>
+                <option value="quic">quic</option>
+                <option value="xtcp">xtcp</option>
+              </select>
+              <span class="field-hint">Transport protocol used to connect to frps.</span>
+            </label>
+            <label>
+              Admin address
+              <input type="text" id="adminAddr" placeholder="127.0.0.1" />
+              <span class="field-hint">Host binding for the admin API.</span>
+            </label>
+            <label>
+              Admin port
+              <input type="number" id="adminPort" min="1" max="65535" />
+              <span class="field-hint">Defaults to 7400 when admin API is enabled.</span>
+            </label>
+            <label>
+              Log level
+              <select id="logLevel">
+                <option value="">default</option>
+                <option value="trace">trace</option>
+                <option value="debug">debug</option>
+                <option value="info">info</option>
+                <option value="warn">warn</option>
+                <option value="error">error</option>
+              </select>
+              <span class="field-hint">Control the verbosity of frpc logging.</span>
+            </label>
+            <label>
+              Log file
+              <input type="text" id="logFile" placeholder="/var/log/frpc.log" />
+              <span class="field-hint">Leave empty to log to stdout.</span>
+            </label>
+            <label>
+              Log max days
+              <input type="number" id="logMaxDays" min="0" max="365" />
+              <span class="field-hint">Retention for log files in days.</span>
+            </label>
+            <label>
+              TLS server name
+              <input type="text" id="tlsServerName" placeholder="frps.example.com" />
+              <span class="field-hint">Optional SNI override when TLS is enabled.</span>
+            </label>
+            <label>
+              Heartbeat interval (s)
+              <input type="number" id="heartbeatInterval" min="0" max="3600" />
+              <span class="field-hint">0 keeps the default client heartbeat.</span>
+            </label>
+            <label>
+              Heartbeat timeout (s)
+              <input type="number" id="heartbeatTimeout" min="0" max="3600" />
+              <span class="field-hint">After this time without a heartbeat the client reconnects.</span>
+            </label>
+          </div>
+          <div class="toggle-grid">
+            <label class="switch-field">
+              <input type="checkbox" id="tlsEnable" />
+              <span class="switch-control" aria-hidden="true"></span>
+              <span class="switch-label">
+                <strong>Enable TLS</strong>
+                <span>Encrypt traffic between frpc and frps.</span>
+              </span>
+            </label>
+            <label class="switch-field">
+              <input type="checkbox" id="loginFailExit" />
+              <span class="switch-control" aria-hidden="true"></span>
+              <span class="switch-label">
+                <strong>Exit on authentication failure</strong>
+                <span>Stop retrying when login fails.</span>
+              </span>
+            </label>
+          </div>
+        </details>
         <div class="actions common-actions">
-          <button id="saveConfig" class="button primary" type="button">Save Settings</button>
+          <button id="saveConfig" class="button primary" type="button">Save settings</button>
           <div id="connectionStatus" class="connection-status muted">Server connection: checking...</div>
+        </div>
+      </section>
+
+      <section class="card" id="binary-section">
+        <div class="section-header">
+          <div>
+            <h2>frpc binary & automation</h2>
+            <p class="muted">Point to your executable and tune automation preferences.</p>
+          </div>
+        </div>
+        <div class="form-grid single">
+          <label>
+            frpc executable
+            <input type="text" id="frpcPath" placeholder="/usr/local/bin/frpc" />
+            <span class="field-hint">Absolute path to the frpc binary running on this host.</span>
+          </label>
+        </div>
+        <div class="preference-grid">
+          <label class="preference-toggle">
+            <input type="checkbox" id="autoStart" />
+            <span class="toggle-visual" aria-hidden="true"></span>
+            <span class="preference-copy">
+              <strong>Auto start frpc with the UI</strong>
+              <span>Launch frpc automatically whenever this control center boots.</span>
+            </span>
+          </label>
+          <label class="preference-toggle">
+            <input type="checkbox" id="autoRefreshPreference" />
+            <span class="toggle-visual" aria-hidden="true"></span>
+            <span class="preference-copy">
+              <strong>Keep dashboards auto refreshed</strong>
+              <span>Refresh status and logs every 5 seconds.</span>
+            </span>
+          </label>
+        </div>
+        <div class="callout" role="note">
+          <p>The generated configuration files live in <code>data/frpc.generated.ini</code> and <code>data/frpc.generated.toml</code>. Keep them handy for audits or manual runs.</p>
         </div>
       </section>
 
       <section class="card" id="proxies-section">
         <div class="section-header">
           <div>
-            <h2>Forwarded Services</h2>
+            <h2>Forwarded services</h2>
             <p class="muted" id="proxySummary">Create tunnels that frpc should manage.</p>
           </div>
-          <div class="proxy-toolbar">
-            <input type="search" id="proxySearch" placeholder="Search forwardings..." />
-            <button id="addProxy" class="button primary" type="button">Add Forwarding</button>
+          <div class="section-actions column">
+            <div class="filter-chips" role="tablist">
+              <button type="button" class="chip active" data-proxy-filter="all">All</button>
+              <button type="button" class="chip" data-proxy-filter="tcp">TCP</button>
+              <button type="button" class="chip" data-proxy-filter="udp">UDP</button>
+              <button type="button" class="chip" data-proxy-filter="http">HTTP</button>
+              <button type="button" class="chip" data-proxy-filter="https">HTTPS</button>
+            </div>
+            <div class="toolbar-row">
+              <input type="search" id="proxySearch" placeholder="Search forwardings..." />
+              <button id="resetProxyFilters" class="button ghost" type="button">Reset filters</button>
+              <button id="addProxy" class="button primary" type="button">Add forwarding</button>
+            </div>
           </div>
         </div>
         <div id="proxies"></div>
         <div class="actions">
-          <button id="saveProxies" class="button primary" type="button">Save Forwardings</button>
+          <button id="saveProxies" class="button primary" type="button">Save forwardings</button>
         </div>
       </section>
 
       <section class="card" id="control-section">
-        <h2>frpc Control</h2>
+        <div class="section-header">
+          <div>
+            <h2>frpc control</h2>
+            <p class="muted">Start, stop, or restart the frpc process instantly.</p>
+          </div>
+        </div>
         <div class="status" id="status"></div>
         <div class="actions button-group">
           <button id="startFrpc" class="button primary" type="button">Start frpc</button>
@@ -112,11 +270,34 @@
         </div>
       </section>
 
+      <section class="card" id="tools-section">
+        <div class="section-header">
+          <div>
+            <h2>Configuration tools</h2>
+            <p class="muted">Back up or share your frpc configuration without leaving the UI.</p>
+          </div>
+        </div>
+        <div class="tools-grid">
+          <label class="file-pick">
+            <input type="file" id="importConfig" accept="application/json" />
+            <span class="file-pick-visual">
+              <span class="icon" aria-hidden="true">⬆</span>
+              <span>Import JSON</span>
+            </span>
+          </label>
+          <button id="exportJson" class="button ghost" type="button">Export JSON</button>
+          <button id="exportIni" class="button ghost" type="button">Export INI</button>
+          <button id="exportToml" class="button ghost" type="button">Export TOML</button>
+          <button id="copyConfig" class="button ghost" type="button">Copy to clipboard</button>
+        </div>
+        <p class="muted small" id="toolsHint">All exports are generated directly in your browser. Secrets never leave this page.</p>
+      </section>
+
       <section class="card" id="logs-section">
         <div class="section-header">
           <div>
-            <h2>Activity Log</h2>
-            <p class="muted">Recent output from frpc</p>
+            <h2>Activity log</h2>
+            <p class="muted">Recent output from frpc.</p>
           </div>
           <div class="log-tools">
             <button id="downloadLogs" class="button ghost" type="button">Download</button>
@@ -128,16 +309,27 @@
     </main>
 
     <footer class="footer">
-      Made by <a href="https://github.com/nooblk-98" target="_blank" rel="noopener noreferrer">Nooblk</a> with love.
+      <p>Made by <a href="https://github.com/nooblk-98" target="_blank" rel="noopener noreferrer">Nooblk</a> with love. Enhanced for power users.</p>
     </footer>
   </div>
 
   <template id="proxy-template">
     <div class="proxy-entry">
-      <div class="form-grid">
+      <div class="proxy-entry-header">
+        <div class="proxy-title">
+          <span class="proxy-type" data-role="proxy-type">tcp</span>
+          <h3 class="proxy-name" data-role="proxy-name">New forwarding</h3>
+        </div>
+        <div class="proxy-actions">
+          <button class="button ghost small" data-action="duplicate" type="button">Duplicate</button>
+          <button class="button danger small" data-action="remove" type="button">Remove</button>
+        </div>
+      </div>
+      <div class="form-grid compact">
         <label>
           Name
           <input type="text" data-field="name" placeholder="my-service" />
+          <span class="field-hint">Unique identifier for this forwarding.</span>
         </label>
         <label>
           Type
@@ -147,39 +339,49 @@
             <option value="http">http</option>
             <option value="https">https</option>
           </select>
+          <span class="field-hint">Match the protocol configured on frps.</span>
         </label>
         <label>
           Local IP
           <input type="text" data-field="local_ip" placeholder="127.0.0.1" />
+          <span class="field-hint">The host where the service is exposed.</span>
         </label>
         <label>
           Local port
           <input type="number" data-field="local_port" min="1" max="65535" />
+          <span class="field-hint">Internal port exposed by frpc.</span>
         </label>
         <label>
           Remote port
           <input type="number" data-field="remote_port" min="1" max="65535" />
-        </label>
-        <label>
-          Custom domains
-          <input type="text" data-field="custom_domains" placeholder="app.example.com" />
-        </label>
-        <label>
-          Subdomain
-          <input type="text" data-field="subdomain" placeholder="myapp" />
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" data-field="use_encryption" /> use_encryption
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" data-field="use_compression" /> use_compression
+          <span class="field-hint">Port clients will connect to on frps.</span>
         </label>
       </div>
-      <div class="proxy-actions">
-        <button class="button danger" data-action="remove" type="button">Remove</button>
-      </div>
+      <details class="proxy-advanced">
+        <summary>Advanced options</summary>
+        <div class="form-grid compact">
+          <label>
+            Custom domains
+            <input type="text" data-field="custom_domains" placeholder="app.example.com" />
+            <span class="field-hint">Comma separated list for HTTP/HTTPS proxies.</span>
+          </label>
+          <label>
+            Subdomain
+            <input type="text" data-field="subdomain" placeholder="myapp" />
+            <span class="field-hint">Convenient shortcut for HTTP/HTTPS proxies.</span>
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" data-field="use_encryption" /> use_encryption
+          </label>
+          <label class="checkbox">
+            <input type="checkbox" data-field="use_compression" /> use_compression
+          </label>
+        </div>
+      </details>
     </div>
   </template>
+
+  <div id="flash-root"></div>
 
   <script src="app.js"></script>
 </body>
