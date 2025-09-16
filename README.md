@@ -2,6 +2,13 @@
 
 A lightweight Node.js + vanilla web UI to manage a local [`frpc`](https://github.com/fatedier/frp) client. Configure your tunnels, persist settings, and start or stop the frpc process directly from the browser.
 
+Key niceties include:
+
+- Live server reachability indicator in the Common settings panel
+- Auto-start of frpc once a valid server address/port is configured (and opt-out by pressing **Stop frpc**)
+- Dedicated Save buttons for both global settings and forwarding rules
+- A friendly footer linking back to the maintainer
+
 ## Prerequisites
 
 - Node.js 18+
@@ -21,9 +28,9 @@ By default the web server listens on http://localhost:4000.
 The included `docker-compose.yml` brings up two services:
 
 - `frpc`: the FRP client, based on `${FRPC_IMAGE:-snowdreamtech/frpc:alpine}`
-- `frpc-ui`: this web UI, built on top of the chosen FRPC image so the binary is available inside the container
+- `frpc-ui`: this web UI, built on top of the chosen FRPC image so the binary is available inside the container and published on port 4000
 
-> **Note**: `network_mode: host` is used to match the upstream Docker examples. This requires running on a Linux host (Docker Desktop on macOS/Windows does not support host networking).
+> **Note**: the `frpc` service still uses `network_mode: host` to expose your tunnels just like the upstream frp examples. Host networking requires a Linux engine; on macOS/Windows the UI continues to work, but `frpc` will not be able to bind remote ports unless you run inside WSL or a Linux VM.
 
 Bring the stack online:
 
