@@ -124,8 +124,23 @@ function buildToml(config) {
   return lines.join(os.EOL) + os.EOL;
 }
 
+function ensureFileTarget(filePath) {
+  try {
+    const stats = fs.lstatSync(filePath);
+    if (stats.isDirectory()) {
+      fs.rmSync(filePath, { recursive: true, force: true });
+    }
+  } catch (error) {
+    if (error.code !== 'ENOENT') {
+      throw error;
+    }
+  }
+}
+
 function ensureConfigFiles(config) {
   fs.mkdirSync(CONFIG_DIR, { recursive: true });
+  ensureFileTarget(GENERATED_INI);
+  ensureFileTarget(GENERATED_TOML);
   const iniBody = buildIni(config);
   const tomlBody = buildToml(config);
   fs.writeFileSync(GENERATED_INI, iniBody, 'utf-8');
