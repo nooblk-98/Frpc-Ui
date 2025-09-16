@@ -272,6 +272,44 @@ a:hover {
   gap: 16px;
 }
 
+#proxies-section .section-actions {
+  width: 100%;
+}
+
+#proxies-section .toolbar-row {
+  width: 100%;
+}
+
+@media (min-width: 960px) {
+  #proxies-section .section-header {
+    align-items: center;
+  }
+
+  #proxies-section .section-actions.column {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  #proxies-section .filter-chips {
+    flex: 1 1 auto;
+  }
+
+  #proxies-section .toolbar-row {
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 14px;
+  }
+
+  #proxies-section .toolbar-row input[type='search'] {
+    flex: 1 1 280px;
+    max-width: 360px;
+  }
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
