@@ -11,7 +11,12 @@ const defaultConfig = () => ({
     token: '',
     user: ''
   },
-  proxies: []
+  proxies: [],
+  preferences: {
+    autoStart: true,
+    autoRefresh: true,
+    theme: 'dark'
+  }
 });
 
 function ensureStore() {
@@ -35,14 +40,19 @@ function getConfig() {
 
 function saveConfig(config) {
   ensureStore();
+  const defaults = defaultConfig();
   const merged = {
-    ...defaultConfig(),
+    ...defaults,
     ...config,
     common: {
-      ...defaultConfig().common,
+      ...defaults.common,
       ...(config.common || {})
     },
-    proxies: Array.isArray(config.proxies) ? config.proxies : []
+    proxies: Array.isArray(config.proxies) ? config.proxies : [],
+    preferences: {
+      ...defaults.preferences,
+      ...(config.preferences || {})
+    }
   };
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(merged, null, 2));
   return merged;
