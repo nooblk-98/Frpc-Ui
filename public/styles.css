@@ -272,6 +272,44 @@ a:hover {
   gap: 16px;
 }
 
+#proxies-section .section-actions {
+  width: 100%;
+}
+
+#proxies-section .toolbar-row {
+  width: 100%;
+}
+
+@media (min-width: 960px) {
+  #proxies-section .section-header {
+    align-items: center;
+  }
+
+  #proxies-section .section-actions.column {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
+  #proxies-section .filter-chips {
+    flex: 1 1 auto;
+  }
+
+  #proxies-section .toolbar-row {
+    width: auto;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    flex-wrap: nowrap;
+    gap: 14px;
+  }
+
+  #proxies-section .toolbar-row input[type='search'] {
+    flex: 1 1 280px;
+    max-width: 360px;
+  }
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -772,9 +810,16 @@ select:focus {
   align-items: stretch;
 }
 
+.tools-grid .button {
+  width: 100%;
+  justify-content: center;
+  min-height: 52px;
+}
+
 .file-pick {
   position: relative;
-  display: inline-block;
+  display: block;
+  width: 100%;
 }
 
 .file-pick input {
@@ -788,22 +833,35 @@ select:focus {
 
 .file-pick-visual {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  border-radius: var(--radius-md);
+  gap: 10px;
+  border-radius: 999px;
   border: 1px dashed var(--border);
   background: var(--card-alt);
-  padding: 18px;
+  padding: 12px 22px;
   color: var(--text);
   font-size: 0.9rem;
-  transition: border-color var(--transition), background var(--transition);
+  font-weight: 600;
+  min-height: 52px;
+  text-align: center;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.22s ease,
+    border-color var(--transition),
+    background var(--transition),
+    color var(--transition);
+}
+
+.file-pick-visual .icon {
+  font-size: 1.1rem;
 }
 
 .file-pick:hover .file-pick-visual {
-  border-color: var(--accent);
-  background: rgba(79, 143, 249, 0.15);
+  border-color: rgba(79, 143, 249, 0.5);
+  background: rgba(79, 143, 249, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.22);
 }
 
 .actions {
