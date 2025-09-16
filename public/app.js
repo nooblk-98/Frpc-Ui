@@ -39,7 +39,8 @@ function renderConnectionStatus() {
   const config = state.config || {};
   const common = config.common || {};
   const serverAddr = (common.server_addr || '').trim();
-  const hasPort = common.server_port !== undefined && common.server_port !== null && common.server_port !== '';
+  const portValue = Number(common.server_port);
+  const hasPort = Number.isFinite(portValue) && portValue > 0;
 
   if (!serverAddr || !hasPort) {
     connectionStatusEl.textContent = 'Server connection: configure server address & port';
@@ -247,6 +248,8 @@ async function refreshStatus() {
   } catch (error) {
     console.error('Failed to refresh status', error);
     state.status = null;
+    renderStatus();
+    renderLogs();
     renderConnectionStatus();
   }
 }
@@ -311,6 +314,8 @@ function init() {
 }
 
 init();
+
+
 
 
 

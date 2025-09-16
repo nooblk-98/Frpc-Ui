@@ -182,7 +182,9 @@ function getStatus() {
     lastExit,
     lastError,
     logs: [...logs]
-  }
+  };
+}
+
 function getFriendlyErrorMessage(error) {
   if (!error) {
     return 'Unknown error';
@@ -258,19 +260,25 @@ async function getStatusWithConnection() {
   }
   return status;
 }
-;
-}
 
 module.exports = {
   startFrpc,
   stopFrpc,
   getStatus,
+  getStatusWithConnection,
   buildIni,
   buildToml,
   ensureConfigFiles,
   GENERATED_INI,
   GENERATED_TOML
 };
+
+
+
+
+
+
+
 
 
 
