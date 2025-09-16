@@ -7,71 +7,130 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header>
-    <h1>frpc Client Dashboard</h1>
-    <p>Configure your FRP client, manage tunnels, and monitor logs from a simple web page.</p>
-  </header>
-
-  <main>
-    <section class="card" id="common-section">
-      <h2>Common Settings</h2>
-      <div class="form-grid">
-        <label>
-          Server address
-          <input type="text" id="serverAddr" placeholder="example.com" />
-        </label>
-        <label>
-          Server port
-          <input type="number" id="serverPort" min="1" max="65535" />
-        </label>
-        <label>
-          Token (optional)
-          <input type="text" id="token" />
-        </label>
-        <label>
-          User (optional)
-          <input type="text" id="user" />
-        </label>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-logo">frpc</div>
+        <div class="brand-copy">
+          <h1>frpc Control Center</h1>
+          <p>Monitor tunnels, keep connections healthy, and react quickly.</p>
+        </div>
       </div>
-      <div class="actions common-actions">
-        <button id="saveConfig">Save Settings</button>
-        <div id="connectionStatus" class="connection-status muted">Server connection: checking...</div>
+      <div class="top-actions">
+        <button id="refreshStatus" class="button ghost" type="button">
+          <span class="icon">?</span>
+          <span>Refresh</span>
+        </button>
+        <button id="themeToggle" class="button ghost" type="button" aria-label="Toggle theme">
+          <span class="icon" id="themeToggleIcon">??</span>
+          <span id="themeToggleLabel">Dark</span>
+        </button>
       </div>
-    </section>
+    </header>
 
-    <section class="card" id="proxies-section">
-      <div class="section-header">
-        <h2>Forwarded Services</h2>
-        <button id="addProxy">Add Forwarding</button>
-      </div>
-      <div id="proxies"></div>
-      <div class="actions">
-        <button id="saveProxies">Save Forwardings</button>
-      </div>
-    </section>
+    <main class="dashboard">
+      <section class="card overview" id="overview-card">
+        <h2>Overview</h2>
+        <div class="overview-grid">
+          <div class="metric">
+            <span class="metric-label">frpc status</span>
+            <span class="metric-value badge" id="overview-status">Unknown</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Server</span>
+            <span class="metric-value badge" id="overview-connection">Checking…</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Forwardings</span>
+            <span class="metric-value" id="overview-proxies">0</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Auto refresh</span>
+            <span class="metric-value badge" id="overview-auto-refresh">On</span>
+          </div>
+        </div>
+      </section>
 
-    <section class="card" id="control-section">
-      <h2>frpc Control</h2>
-      <div class="status" id="status"></div>
-      <div class="actions">
-        <button id="startFrpc" class="primary">Start frpc</button>
-        <button id="stopFrpc">Stop frpc</button>
-      </div>
-    </section>
+      <section class="card" id="common-section">
+        <div class="section-header">
+          <div>
+            <h2>Common Settings</h2>
+            <p class="muted">Define how frpc connects to your frps server.</p>
+          </div>
+        </div>
+        <div class="form-grid">
+          <label>
+            Server address
+            <input type="text" id="serverAddr" placeholder="example.com" />
+          </label>
+          <label>
+            Server port
+            <input type="number" id="serverPort" min="1" max="65535" />
+          </label>
+          <label>
+            Token (optional)
+            <input type="text" id="token" />
+          </label>
+          <label>
+            User (optional)
+            <input type="text" id="user" />
+          </label>
+        </div>
+        <div class="actions common-actions">
+          <button id="saveConfig" class="button primary" type="button">Save Settings</button>
+          <div id="connectionStatus" class="connection-status muted">Server connection: checking...</div>
+        </div>
+      </section>
 
-    <section class="card" id="logs-section">
-      <div class="section-header">
-        <h2>Recent Logs</h2>
-        <button id="refreshStatus">Refresh</button>
-      </div>
-      <pre id="logs" class="logs"></pre>
-    </section>
-  </main>
+      <section class="card" id="proxies-section">
+        <div class="section-header">
+          <div>
+            <h2>Forwarded Services</h2>
+            <p class="muted" id="proxySummary">Create tunnels that frpc should manage.</p>
+          </div>
+          <div class="proxy-toolbar">
+            <input type="search" id="proxySearch" placeholder="Search forwardings..." />
+            <button id="addProxy" class="button primary" type="button">Add Forwarding</button>
+          </div>
+        </div>
+        <div id="proxies"></div>
+        <div class="actions">
+          <button id="saveProxies" class="button primary" type="button">Save Forwardings</button>
+        </div>
+      </section>
 
-  <footer class="footer">
-    Made by <a href="https://github.com/nooblk-98" target="_blank" rel="noopener noreferrer">Nooblk</a> with love.
-  </footer>
+      <section class="card" id="control-section">
+        <h2>frpc Control</h2>
+        <div class="status" id="status"></div>
+        <div class="actions button-group">
+          <button id="startFrpc" class="button primary" type="button">Start frpc</button>
+          <button id="stopFrpc" class="button" type="button">Stop frpc</button>
+          <button id="restartFrpc" class="button ghost" type="button">Restart</button>
+        </div>
+        <div class="actions">
+          <button id="autoRefreshToggle" class="button ghost" type="button">Pause auto refresh</button>
+        </div>
+      </section>
 
+      <section class="card" id="logs-section">
+        <div class="section-header">
+          <div>
+            <h2>Activity Log</h2>
+            <p class="muted">Recent output from frpc</p>
+          </div>
+          <div class="log-tools">
+            <button id="downloadLogs" class="button ghost" type="button">Download</button>
+            <button id="clearLogs" class="button ghost" type="button">Clear view</button>
+          </div>
+        </div>
+        <pre id="logs" class="logs" aria-live="polite"></pre>
+      </section>
+    </main>
+
+    <footer class="footer">
+      Made by <a href="https://github.com/nooblk-98" target="_blank" rel="noopener noreferrer">Nooblk</a> with love.
+    </footer>
+  </div>
 
   <template id="proxy-template">
     <div class="proxy-entry">
@@ -117,7 +176,7 @@
         </label>
       </div>
       <div class="proxy-actions">
-        <button class="danger" data-action="remove">Remove</button>
+        <button class="button danger" data-action="remove" type="button">Remove</button>
       </div>
     </div>
   </template>
@@ -125,9 +184,3 @@
   <script src="app.js"></script>
 </body>
 </html>
-
-
-
-
-
-
