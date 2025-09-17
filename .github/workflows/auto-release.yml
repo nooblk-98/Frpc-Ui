@@ -1,0 +1,41 @@
+name: Auto Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Prepare release metadata
+        id: release
+        shell: bash
+        run: |
+          sha_short=$(git rev-parse --short HEAD)
+          echo "tag=auto-${sha_short}" >> "$GITHUB_OUTPUT"
+          echo "name=Auto release ${sha_short}" >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<'EOF'"
+            echo "Automated release for commit $GITHUB_SHA"
+            echo
+            git log -1 --pretty=%B
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.release.outputs.tag }}
+          name: ${{ steps.release.outputs.name }}
+          body: ${{ steps.release.outputs.body }}
+          draft: false
+          prerelease: false
