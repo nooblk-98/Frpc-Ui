@@ -1,108 +1,89 @@
 # frpc UI
 
-A lightweight Node.js + vanilla web UI to manage a local [`frpc`](https://github.com/fatedier/frp) client. Configure your tunnels, persist settings, and start or stop the frpc process directly from the browser.
+Run and monitor your [`frpc`](https://github.com/fatedier/frp) client from a clean dashboard. Quickly draft tunnels, persist them to disk, and manage the underlying process without leaving the browser.
 
-Key niceties include:
-
-- Live server reachability indicator in the Common settings panel
-- Auto-start of frpc once a valid server address/port is configured (and opt-out by pressing **Stop frpc**)
-- Dedicated Save buttons for both global settings and forwarding rules
-- A friendly footer linking back to the maintainer
+**Highlights**
+- Live reachability status while you edit common FRP settings
+- Auto-start/stop controls with dedicated save actions for global settings and forwarding rules
+- Works with Docker out of the box, or alongside your existing local `frpc` binary
+- Persists configuration to disk so upgrades never wipe your tunnels
 
 ## UI Showcase
 
 ![Dark theme dashboard](images/dark_theme.png)
 ![Light theme dashboard](images/white_theme.png)
 
-## Prerequisites
+## Quick Start
 
-- Node.js 18+
-- A local `frpc` binary (if you run outside Docker; the included image already ships with one)
-
-## Getting started
+### Run locally
 
 ```bash
 npm install
 npm start
 ```
 
-By default the web server listens on http://localhost:4000.
+The UI will be available at http://localhost:4000.
 
-## Docker
-
-The included `docker-compose.yml` brings up two services:
-
-- `frpc`: the FRP client, based on `${FRPC_IMAGE:-snowdreamtech/frpc:alpine}`
-- `frpc-ui`: this web UI, built on top of the chosen FRPC image so the binary is available inside the container and published on port 4000
-
-> **Note**: the `frpc` service still uses `network_mode: host` to expose your tunnels just like the upstream frp examples. Host networking requires a Linux engine; on macOS/Windows the UI continues to work, but `frpc` will not be able to bind remote ports unless you run inside WSL or a Linux VM.
-
-Bring the stack online:
+### Run with Docker Compose
 
 ```bash
 docker compose up --build -d
 ```
 
-Configuration is persisted on the host in the `./data` folder:
+The bundled `docker-compose.yml` launches two services:
 
-- `config.json`: settings saved by the UI
-- `frpc.generated.toml` / `frpc.generated.ini`: auto-generated client config that the FRPC container consumes
+- `frpc`: FRP client based on `${FRPC_IMAGE:-snowdreamtech/frpc:alpine}`
+- `frpc-ui`: this dashboard, exposed on port 4000
 
-Follow the combined logs with:
+> **Heads-up**: `frpc` defaults to `network_mode: host`. Host networking requires a Linux engine. On macOS/Windows the UI still works, but `frpc` cannot expose remote ports unless you run under WSL or a Linux VM.
+
+### Deploy using the prebuilt image
+
+Use `docker-compose.live.yml` when you just want to pull published images:
+
+```bash
+docker compose -f docker-compose.live.yml pull
+docker compose -f docker-compose.live.yml up -d
+```
+
+Visit `http://<server-ip>:4000` and configure your tunnels.
+
+## Configuration & Data
+
+All persistent files live inside `./data` by default:
+
+- `config.json`: everything saved via the UI
+- `frpc.generated.toml` / `frpc.generated.ini`: regenerated client config consumed by the FRPC container
+
+Bring the stack down or tail logs at any time:
 
 ```bash
 docker compose logs -f
-```
-
-Shut everything down:
-
-```bash
 docker compose down
 ```
 
-The Dockerfile copies the FRPC binary from `snowdreamtech/frpc`; swap to another variant (`:alpine`, `:debian`, `:bookworm`, etc.) by setting `FRPC_IMAGE` in a `.env` file or via environment variables before running Compose.
+(For the live deployment file, pass `-f docker-compose.live.yml` as shown above.)
 
-## Usage
+## Development Notes
 
-1. Open the dashboard and fill in the Common section with your FRP server address, port, token, and user (if required). The header now shows a live connection check so you immediately know if the server is reachable.
-2. Add forwarding entries for every service you want to expose. Each entry becomes a section in the generated `frpc` config.
-3. Click **Save Settings** or **Save Forwardings** to persist updates in `data/config.json`.
-4. The backend writes `data/frpc.generated.ini` and `data/frpc.generated.toml` on every save/start. These files are bind-mounted into the frpc container.
-5. frpc starts automatically whenever the stack boots and a valid address/port is configured. Use **Stop frpc** if you need to keep it down; **Start frpc** brings it back manually.
+- HTTP API routes live under `/api/*`; static assets are served from `public/`
+- The backend keeps the latest 500 log lines available to the UI
+- Delete `data/config.json` to reset the app to a clean slate
 
-The UI footer links back to the project author if you want to follow along or contribute.
+## Contributing
 
-## Development notes
+Contributions are very welcome! Here is how to get started:
 
-- API endpoints live under `/api/*` and the static UI is served from `public/`.
-- Configuration is persisted in `data/config.json`; delete the file to reset to defaults.
-- The backend keeps a rolling window of the last 500 log lines for display in the UI.
+1. Fork the repo and create a feature branch
+2. Follow the local quick start above (or run the Docker stack) to verify your changes
+3. Add or update tests/docs whenever behavior changes
+4. Open a pull request describing the problem and how your change addresses it
 
-## Limitations
+If you discover a bug or have an idea, please [open an issue](../../issues) or start a discussion. Feedback and feature proposals make the project better for everyone.
 
-- The UI currently covers the most common frpc fields (tcp/udp/http/https). Advanced directives can be added by editing `data/config.json` manually.
-- frpc must run on the same machine as this UI, and the process inherits the working directory of the binary location.
+## Roadmap Ideas
 
-
-### Deploying with the prebuilt image
-
-If you want to run the UI on a server without building the image locally, use the provided `docker-compose.live.yml`. It pulls `lahiru98s/frpc-ui:latest` from Docker Hub and keeps persisting your configuration in the `data/` folder.
-
-1. Copy the repository (or at least the `docker-compose.live.yml` file) to your server.
-2. (Optional) Create a `.env` next to the compose file if you need to override `FRPC_IMAGE` or pin `FRPC_UI_IMAGE` to a specific tag.
-3. Pull the latest images:
-   ```bash
-   docker compose -f docker-compose.live.yml pull
-   ```
-4. Start the stack in the background:
-   ```bash
-   docker compose -f docker-compose.live.yml up -d
-   ```
-5. Reach the UI on `http://<server-ip>:4000` and configure your tunnels. All changes remain in the `data/` directory so future updates only require another `pull` + `up` run.
-
-Follow logs or stop the stack the same way as the development compose file:
-
-```bash
-docker compose -f docker-compose.live.yml logs -f
-docker compose -f docker-compose.live.yml down
-```
+- [ ] Expanded support for advanced FRP directives
+- [ ] Role-based access or authentication for shared dashboards
+- [ ] Built-in health checks and alerting
+- [ ] Additional theme options and layout tweaks
