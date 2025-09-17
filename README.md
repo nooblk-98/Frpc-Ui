@@ -79,3 +79,25 @@ The UI footer links back to the project author if you want to follow along or co
 - frpc must run on the same machine as this UI, and the process inherits the working directory of the binary location.
 
 
+### Deploying with the prebuilt image
+
+If you want to run the UI on a server without building the image locally, use the provided `docker-compose.live.yml`. It pulls `lahiru98s/frpc-ui:latest` from Docker Hub and keeps persisting your configuration in the `data/` folder.
+
+1. Copy the repository (or at least the `docker-compose.live.yml` file) to your server.
+2. (Optional) Create a `.env` next to the compose file if you need to override `FRPC_IMAGE` or pin `FRPC_UI_IMAGE` to a specific tag.
+3. Pull the latest images:
+   ```bash
+   docker compose -f docker-compose.live.yml pull
+   ```
+4. Start the stack in the background:
+   ```bash
+   docker compose -f docker-compose.live.yml up -d
+   ```
+5. Reach the UI on `http://<server-ip>:4000` and configure your tunnels. All changes remain in the `data/` directory so future updates only require another `pull` + `up` run.
+
+Follow logs or stop the stack the same way as the development compose file:
+
+```bash
+docker compose -f docker-compose.live.yml logs -f
+docker compose -f docker-compose.live.yml down
+```
