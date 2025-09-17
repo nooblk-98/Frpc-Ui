@@ -24,11 +24,11 @@ jobs:
           echo "tag=auto-${sha_short}" >> "$GITHUB_OUTPUT"
           echo "name=Auto release ${sha_short}" >> "$GITHUB_OUTPUT"
           {
-            echo "body<<'EOF'"
+            echo "body<<EOF"
             echo "Automated release for commit $GITHUB_SHA"
             echo
             git log -1 --pretty=%B
-            echo 'EOF'
+            echo "EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub release
