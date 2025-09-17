@@ -21,11 +21,13 @@ jobs:
         shell: bash
         run: |
           sha_short=$(git rev-parse --short HEAD)
+          release_time=$(date -u +"%Y-%m-%d %H:%M:%S UTC")
           echo "tag=auto-${sha_short}" >> "$GITHUB_OUTPUT"
-          echo "name=Auto release ${sha_short}" >> "$GITHUB_OUTPUT"
+          echo "name=Auto release ${sha_short} ${release_time}" >> "$GITHUB_OUTPUT"
           {
             echo "body<<EOF"
             echo "Automated release for commit $GITHUB_SHA"
+            echo "Released at ${release_time}"
             echo
             git log -1 --pretty=%B
             echo "EOF"
