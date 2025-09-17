@@ -9,6 +9,11 @@ Key niceties include:
 - Dedicated Save buttons for both global settings and forwarding rules
 - A friendly footer linking back to the maintainer
 
+## UI Showcase
+
+![Dark theme dashboard](images/dark_theme.png)
+![Light theme dashboard](images/white_theme.png)
+
 ## Prerequisites
 
 - Node.js 18+
